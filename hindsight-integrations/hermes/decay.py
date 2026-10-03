@@ -19,7 +19,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from typing import Any, Iterable, Iterator, Mapping
 
 UTC = timezone.utc
 
@@ -142,7 +142,7 @@ def _result_is_exempt(result: Any, policy: DecayPolicy) -> bool:
 class HindsightDecayStore:
     """SQLite ledger used to soft-filter stale Hindsight recall results."""
 
-    def __init__(self, path: str | Path, bank_id: str, policy: DecayPolicy | None = None):
+    def __init__(self, path: str | Path, bank_id: str, policy: DecayPolicy | None = None) -> None:
         self.path = Path(path)
         self.bank_id = str(bank_id)
         self.policy = policy or DecayPolicy()
@@ -157,7 +157,7 @@ class HindsightDecayStore:
         return conn
 
     @contextmanager
-    def _transaction(self):
+    def _transaction(self) -> Iterator[sqlite3.Connection]:
         """Commit or roll back the ledger transaction and close its connection."""
         conn = self._connect()
         try:
